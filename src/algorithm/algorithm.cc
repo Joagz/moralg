@@ -64,6 +64,10 @@ double NormalDistribution::get_covariance(size_t i, size_t j) {
     return covariance_matrix.at(i).at(j);
 }
 
+std::vector<double> NormalDistribution::get_mean() {
+    return this->mean;
+}
+
 NormalDistribution::NormalDistribution() {
 
 };
