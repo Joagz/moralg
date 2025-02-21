@@ -9,31 +9,37 @@ TARGET = $(BIN_DIR)/main
 
 # OBJECT FILES 
 TRAITS_OBJ = $(BUILD_DIR)/traits/traits.o
+ALGORITHM_OBJ = $(BUILD_DIR)/algorithm/algorithm.o
 
 # SOURCES 
 MAIN_SRC = $(SOURCE_DIR)/main.cc
 TRAITS_SRC = $(SOURCE_DIR)/traits/traits.cc
+ALGORITHM_SRC = $(SOURCE_DIR)/algorithm/algorithm.cc
 
 # FLAGS 
-CFLAGS = -Wall -g -I$(SOURCE_DIR)
+CFLAGS = -Wall -g -I$(SOURCE_DIR) -I$(SOURCE_DIR)/traits -I$(SOURCE_DIR)/algorithm 
 CC = g++
 
-NIVELES_OBJ = $(TRAITS_OBJ)
+OBJECTS = $(TRAITS_OBJ) $(ALGORITHM_OBJ)
 
 $(BUILD_DIR)/traits:
 	mkdir -p $(BUILD_DIR)/traits
 
+$(BUILD_DIR)/algorithm:
+	mkdir -p $(BUILD_DIR)/algorithm
+
 # COMPILAR EL PROGRAMA PRINCIPAL
-all: $(MAIN_SRC) $(NIVELES_OBJ)
-	$(CC) $(CFLAGS) $(MAIN_SRC) $(NIVELES_OBJ) -o $(TARGET)
+all: $(MAIN_SRC) $(OBJECTS)
+	$(CC) $(CFLAGS) $(MAIN_SRC) $(OBJECTS) -o $(TARGET)
 
 # CREAR ARCHIVOS OBJECTO 
 $(TRAITS_OBJ): $(TRAITS_SRC) $(BUILD_DIR)/traits
 	$(CC) $(CFLAGS) -c $(TRAITS_SRC) -o $(TRAITS_OBJ)
 
+$(ALGORITHM_OBJ): $(ALGORITHM_SRC) $(BUILD_DIR)/algorithm
+	$(CC) $(CFLAGS) -c $(ALGORITHM_SRC) -o $(ALGORITHM_OBJ)
+
 clean:
 	rm -rf $(TARGET)
-	rm -rf $(NIVELES_OBJ)
-	rm -rf $(NIVELES_LIB)
 	rm -rf $(BUILD_DIR)/*
 
