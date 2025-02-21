@@ -34,24 +34,34 @@ void NormalDistribution::initializer_covariance()
         std::cout << "Please, run initializer_mean(size_t size) first\n";
     }
     // build covariance matrix
-    size_t k = 1;
-    for (size_t i = 0; i < k && k <= this->mean.size(); i++)
+    size_t row_size = 1;
+    for (size_t i = 0; i < row_size && row_size <= this->mean.size(); i++)
     {
-        std::vector<double> row = std::vector<double>(k);
+        std::vector<double> row = std::vector<double>(row_size);
 
         std::fill(row.begin(), row.end(), 0);
-        row.at(k - 1) = 1;
+        row.at(row_size - 1) = 1;
 
         this->covariance_matrix.push_back(row);
 
-        k++;
+        row_size++;
     }
 
     this->covariance_matrix.shrink_to_fit();
 }
 
 double NormalDistribution::get_covariance(size_t i, size_t j) {
-    
+    // We have a "lower triangular" matrix, as the
+    // covariance matrix is symmetric, we can invert
+    // these indexes if j > i (trying to access an "upper
+    // triangular" value)
+    if(j > i) {
+        size_t t = j;
+        j = i;
+        i = t;
+    }
+
+    return covariance_matrix.at(i).at(j);
 }
 
 NormalDistribution::NormalDistribution() {
