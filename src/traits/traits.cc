@@ -17,8 +17,6 @@ Traits::Traits(std::vector<std::string> trait_headers)
 
         this->weight_matrix.at(i) = row;
     }
-
-    print();
 }
 
 Traits::Traits()

@@ -24,7 +24,12 @@ void updateCovariance(MultivariateGaussian *gaussian, std::vector<double> &new_v
     {
         for (size_t j = 0; j <= i; j++)
         {
-            gaussian->set_covariance(i, j, gaussian->get_covariance(i, j) + ((new_val.at(i) - mean.at(i)) * (new_val.at(j) - mean.at(j)) - gaussian->lambda * gaussian->get_covariance(i, j)) / (gaussian->steps + 1));
+            double delta1 = new_val.at(i) - mean.at(i);
+            double delta2 = new_val.at(j) - mean.at(j);
+            if (i != j)
+                gaussian->set_covariance(i, j, gaussian->get_covariance(i, j) + (delta1 * delta2 - gaussian->lambda * gaussian->get_covariance(i, j)) / (gaussian->steps + 1));
+            else
+                gaussian->set_covariance(i, j, gaussian->get_covariance(i, j) + (delta1 * delta2 - (gaussian->lambda) * gaussian->get_covariance(i, j)) / (gaussian->steps + 1) - gaussian->variance_bias);
         }
     }
 }
