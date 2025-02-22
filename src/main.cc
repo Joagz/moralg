@@ -132,6 +132,10 @@ ans = 0.00393 // very good result
 
   traits.print();
 
+  // a partir de acá no sería necesario aclararle al sistema que cuando una acción es mezquina la bondad y compasión
+  // se reducen, sino que podríamos tomar acciones independientes (ser buenos, pero no necesariamente compartir algo) 
+  // y el cálculo reduce los "traits" negativos porque están relacionados inversamente con los buenos
+
   std::cout << "tomamos buenas acciones, significativas, no reducen ni aumentan mezquindad directamente\n";
   traits.update({0, 45, 0});
   traits.update({90, 0, 0});
