@@ -11,7 +11,7 @@ TARGET              = $(BIN_DIR)/main
 TRAITS_OBJ          = $(BUILD_DIR)/traits/traits.o
 ALGORITHM_OBJ       = $(BUILD_DIR)/algorithm/algorithm.o
 GAUSSIAN_OBJ        = $(BUILD_DIR)/math/gaussian/gaussian.o
-FUNCTIONS_OBJ       = $(SOURCE_DIR)/math/functions.o
+FUNCTIONS_OBJ       = $(BUILD_DIR)/math/functions.o
 
 # SOURCES 
 MAIN_SRC            = $(SOURCE_DIR)/main.cc
