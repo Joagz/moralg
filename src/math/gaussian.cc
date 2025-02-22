@@ -73,8 +73,16 @@ double MultivariateGaussian::get_covariance(size_t i, size_t j)
 
 void MultivariateGaussian::update_belief(std::vector<double> &new_val)
 {
-    updateMean(this, new_val);
-    updateCovariance(this, new_val);
+    updateMean(new_val);
+    updateCovariance(new_val);
+    this->update_steps();
+}
+
+void MultivariateGaussian::update_belief(std::vector<double> &new_val, double decay_factor)
+{
+    this->lambda = decay_factor;
+    updateMean(new_val);
+    updateCovariance(new_val);
     this->update_steps();
 }
 
@@ -104,6 +112,7 @@ void MultivariateGaussian::update_steps()
 }
 
 size_t MultivariateGaussian::get_size() { return this->size; }
+size_t MultivariateGaussian::get_steps() { return this->steps; }
 
 MultivariateGaussian::MultivariateGaussian(size_t size, double decay_factor)
 {

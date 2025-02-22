@@ -24,8 +24,12 @@ private:
 public:
     void print();
     size_t get_size();
+    size_t get_steps();
     void update_belief(std::vector<double> &new_val);
-
+    void update_belief(std::vector<double> &new_val, double decay_factor);
+    void updateMean(std::vector<double> &new_val);
+    void updateCovariance(std::vector<double> &new_val);
+    
     double get_covariance(size_t i, size_t j);
     std::vector<std::vector<double>> get_covariance();
     std::vector<double> get_mean();
