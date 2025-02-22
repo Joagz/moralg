@@ -2,6 +2,8 @@
 #include "math/gaussian.hh"
 #include "math/matrix.hh"
 #include "math/vec.hh"
+#include "math/functions.hh"
+#include <cmath>
 
 int main(int argc, char const *argv[])
 {
@@ -15,37 +17,108 @@ int main(int argc, char const *argv[])
      we should map a sigmoid to range from a very low decay when less data points
      exist, up to approximately 1 when we have 100 points, so for example
 
-    \frac{1}{1+\exp\left(-\frac{1}{l}x\right)}
+    \frac{1}{1+\exp\left(-\frac{1}{\lambda}x\right)}
 
-    with l = 50, gives approximately 0.88 when x = 100
+    with \lambda = 45.51, gives approximately 0.9 when x = 100
 
-    the variance_bias is a linear error "fix", it really depends but a value
-    between 0.3, 0.6 should be good enough.
+    In the calculation below, the estimation gives really good, for
+    x = 50 the results show
 
-    We don't want so exact variances but this also depends on the range of the variables
-    If the variable range is [a,b], if b-a is bigger, the error should increase faster.
-
-    In this example, matlab returns the following results after comparing the covariance of
-    the data points and the approximation given in this code snippet
-
-    octave:20> M0-cov(data)
+    octave:4> M0-cov(data)
 ans =
 
-  -3.1486e+01  -5.0051e-02  -5.1485e-02
-  -5.0051e-02  -3.1619e+01  -4.8444e-02
-  -5.1485e-02  -4.8444e-02  -3.1403e+01
+    -3.4633e-02  -9.2653e-02   3.6531e-03
+    -9.2653e-02  -2.7829e-01  -2.0469e-02
+     3.6531e-03  -2.0469e-02   9.8082e-02
 
-    As you can see, the errors are not so big, negative errors in the diagonal mean that our
-    variance_bias is a bit larger that necessary.
+    which are great for our purposes. This estimation of \lambda gives good
+    results for the current interval of values [0,10]
+
+    However let's try random values in [0,20]
+
+    The results in matlab give
+
+octave:7> M0-cov(data)
+ans =
+
+  -1.121592  -0.194776   0.131796
+  -0.194776   0.171796  -0.077286
+   0.131796  -0.077286   0.038408
+
+    which is not a big difference, however it is obvious that this error grows.
+    This is maybe due to numerical unstability in the calculations, giving bigger 
+    numbers because our vectors have also a greater degree of freedom (variances from
+    0 to 20 are greater that from 0 to 10).
+
+    we should run some "normalization" step and divide everything by the greater value.
+
+    Doing this for the second example gives this result
+
+    M0 =
+
+   9.3000e-02   2.4000e-02  -4.0000e-03
+   2.4000e-02   8.7000e-02  -1.2000e-02
+  -4.0000e-03  -1.2000e-02   9.3000e-02
+
+octave:10> cov(data)
+ans =
+
+   9.2499e-02   2.3997e-02  -4.5245e-03
+   2.3997e-02   8.3226e-02  -1.2114e-02
+  -4.5245e-03  -1.2114e-02   9.0249e-02
+
+octave:11> M0-cov(data)
+ans =
+
+   5.0102e-04   3.0612e-06   5.2449e-04
+   3.0612e-06   3.7745e-03   1.1429e-04
+   5.2449e-04   1.1429e-04   2.7510e-03
+
+    this is much better now. Also this constraints our values to be less than
+    1, which is what we expect for weights. But, the values in the M0 matrix are
+    too tiny, we maybe should "normalize" them with a sigmoid to get proper values.
+
+    However let's try with a realistic example, let's suppose we want the game to 
+    have at most 10 points for event for each trait.
+
+M0 =
+
+   1.0100e-01  -3.0000e-03  -1.0000e-02
+  -3.0000e-03   9.3000e-02  -3.0000e-03
+  -1.0000e-02  -3.0000e-03   1.0500e-01
+
+octave:14> cov(data)
+ans =
+
+   9.8616e-02  -2.0735e-03  -9.9265e-03
+  -2.0735e-03   9.2343e-02  -2.4653e-03
+  -9.9265e-03  -2.4653e-03   1.0116e-01
+
+octave:15> M0-cov(data)
+ans =
+
+   2.3837e-03  -9.2653e-04  -7.3469e-05
+  -9.2653e-04   6.5714e-04  -5.3469e-04
+  -7.3469e-05  -5.3469e-04   3.8408e-03
+
+    The results show that it is a good approximation, also the M0 matrix could serve
+    our purposes perfectly, this given that real values are *not random*, they are
+    intended to be related some way.
+
     */
-    MultivariateGaussian gaussian = MultivariateGaussian(3, 0.9, 0.6);
 
-    for (int i = 0; i < 100; i++)
+    double steps = 50;
+    double goal = 0.9;
+    double coeff = -steps / std::log(1 / goal - 1);
+
+    MultivariateGaussian gaussian = MultivariateGaussian(3, sigmoid(steps, coeff));
+
+    for (int i = 0; i < steps; i++)
     {
         double x = rand() % 11;
         double y = rand() % 11;
         double z = rand() % 11;
-        Vector<double> vec = Vector<double>({x, y, z});
+        Vector<double> vec = Vector<double>({x/10, y/10, z/10});
         gaussian.update_belief(vec.data);
         vec.print_as_matlab_vector();
     }

@@ -18,7 +18,6 @@ public:
     size_t size;
     size_t steps;
     double lambda; // decay factor
-    double variance_bias;
 
     void update_steps();
     void print();
@@ -32,7 +31,7 @@ public:
     std::vector<double> get_mean();
     void set_mean(std::vector<double> mean);
     
-    MultivariateGaussian(size_t size, double decay_factor, double linear_error_bias);
+    MultivariateGaussian(size_t size, double decay_factor);
     MultivariateGaussian();
     ~MultivariateGaussian();
 };

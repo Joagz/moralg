@@ -103,12 +103,11 @@ void MultivariateGaussian::update_steps()
     this->steps++;
 }
 
-MultivariateGaussian::MultivariateGaussian(size_t size, double decay_factor, double linear_error_bias)
+MultivariateGaussian::MultivariateGaussian(size_t size, double decay_factor)
 {
     this->size = size;
     this->lambda = decay_factor;
     this->steps = 0;
-    this->variance_bias = linear_error_bias;
     this->initializer_mean(size);
     this->initializer_covariance();
 };
