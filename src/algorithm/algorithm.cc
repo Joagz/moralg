@@ -1,74 +1,30 @@
 #include "algorithm.hh"
 
-void NormalDistribution::print()
+// calculate mean
+void updateMean(MultivariateGaussian *gaussian, std::vector<double> &new_val)
 {
-    std::cout << "Mean: size " << mean.size() << std::endl;
-    for (const auto &m : mean)
-    {
-        std::cout << m << " ";
-    }
-    std::cout << "\n";
+    std::vector<double> mean = std::vector<double>(gaussian->size);
+    std::vector<double> old_mean = gaussian->get_mean();
 
-    std::cout << "Covariance Matrix:\n";
-    for (const auto &row : covariance_matrix)
+    for (size_t i = 0; i < gaussian->size; i++)
     {
-        for (const auto &val : row)
+        // use formula for the aritmetic mean
+        mean.at(i) = (old_mean.at(i) * gaussian->steps + new_val.at(i)) / (gaussian->steps + 1);
+    }
+
+    gaussian->set_mean(mean);
+}
+
+void updateCovariance(MultivariateGaussian *gaussian, std::vector<double> &new_val)
+{
+    std::vector<std::vector<double>> old_covariance = gaussian->get_covariance();
+    std::vector<double> mean = gaussian->get_mean();
+
+    for (size_t i = 0, row_size = 1; i < row_size && row_size <= gaussian->size; i++, row_size++)
+    {
+        for (size_t j = 0; j <= i; j++)
         {
-            std::cout << val << " ";
+            gaussian->set_covariance(i, j, gaussian->get_covariance(i, j) + ((new_val.at(i) - mean.at(i)) * (new_val.at(j) - mean.at(j)) - gaussian->lambda * gaussian->get_covariance(i, j)) / (gaussian->steps + 1));
         }
-        std::cout << "\n";
     }
 }
-
-void NormalDistribution::initializer_mean(size_t size)
-{
-    mean = std::vector<double>(size);
-    std::fill(mean.begin(), mean.end(), 0);
-    mean.shrink_to_fit();
-}
-
-void NormalDistribution::initializer_covariance()
-{
-    if (mean.size() <= 0)
-    {
-        std::cout << "Please, run initializer_mean(size_t size) first\n";
-    }
-    // build covariance matrix
-    size_t row_size = 1;
-    for (size_t i = 0; i < row_size && row_size <= this->mean.size(); i++)
-    {
-        std::vector<double> row = std::vector<double>(row_size);
-
-        std::fill(row.begin(), row.end(), 0);
-        row.at(row_size - 1) = 1;
-
-        this->covariance_matrix.push_back(row);
-
-        row_size++;
-    }
-
-    this->covariance_matrix.shrink_to_fit();
-}
-
-double NormalDistribution::get_covariance(size_t i, size_t j) {
-    // We have a "lower triangular" matrix, as the
-    // covariance matrix is symmetric, we can invert
-    // these indexes if j > i (trying to access an "upper
-    // triangular" value)
-    if(j > i) {
-        size_t t = j;
-        j = i;
-        i = t;
-    }
-
-    return covariance_matrix.at(i).at(j);
-}
-
-std::vector<double> NormalDistribution::get_mean() {
-    return this->mean;
-}
-
-NormalDistribution::NormalDistribution() {
-
-};
-NormalDistribution::~NormalDistribution() {};
