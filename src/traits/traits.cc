@@ -6,17 +6,6 @@ Traits::Traits(std::vector<std::string> trait_headers)
 
     this->trait_values = std::vector<double>(this->trait_headers.size());
     std::fill(this->trait_values.begin(), this->trait_values.end(), 0);
-
-    this->weight_matrix = std::vector<std::vector<double>>(this->trait_headers.size(), std::vector<double>(this->trait_headers.size()));
-
-    for (size_t i = 0; i < this->trait_headers.size(); i++)
-    {
-        std::vector<double> row = std::vector<double>(this->trait_headers.size());
-        std::fill(row.begin(), row.end(), 0);
-        row.at(i) = 1;
-
-        this->weight_matrix.at(i) = row;
-    }
 }
 
 Traits::Traits()
@@ -24,6 +13,27 @@ Traits::Traits()
 }
 
 Traits::~Traits() {}
+
+void Traits::update(std::vector<double> traits)
+{
+    this->gaussian.update_belief(traits);
+
+    std::vector<double> new_trait_values;
+
+    // loop through covariance
+    for (int i = 0; i < this->gaussian.get_size(); i++)
+    {
+        double y = 0;
+
+        for (int j = 0; j < this->gaussian.get_size(); j++)
+        {
+            y += this->gaussian.get_covariance(i, j) * this->trait_values.at(j);
+        }
+        new_trait_values.push_back(y);
+    }
+
+    this->trait_values = new_trait_values;
+}
 
 void Traits::print()
 {
@@ -40,14 +50,4 @@ void Traits::print()
         std::cout << value << " ";
     }
     std::cout << "\n";
-
-    std::cout << "Weight Matrix:\n";
-    for (const auto &row : weight_matrix)
-    {
-        for (const auto &val : row)
-        {
-            std::cout << val << " ";
-        }
-        std::cout << "\n";
-    }
 }

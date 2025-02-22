@@ -4,17 +4,19 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "../math/gaussian.hh"
 
 class Traits
 {
 private:
     std::vector<std::string> trait_headers;
     std::vector<double> trait_values;
-    std::vector<std::vector<double>> weight_matrix;
+    MultivariateGaussian gaussian;
 
 public:
     void print();
-    
+    void update(std::vector<double>);
+
     Traits(std::vector<std::string> trait_headers);
     Traits();
     ~Traits();

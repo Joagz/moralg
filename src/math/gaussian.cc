@@ -103,6 +103,8 @@ void MultivariateGaussian::update_steps()
     this->steps++;
 }
 
+size_t MultivariateGaussian::get_size() { return this->size; }
+
 MultivariateGaussian::MultivariateGaussian(size_t size, double decay_factor)
 {
     this->size = size;
