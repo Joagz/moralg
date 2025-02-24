@@ -2,7 +2,7 @@
 #include "../math/functions.hh"
 #include <cmath>
 
-static const double coeff = -100 / std::log(1 / .9 - 1);
+static const double coeff = -10 / std::log(1 / .9 - 1);
 
 Traits::Traits(std::vector<std::string> trait_headers, double bound)
 {
@@ -26,7 +26,7 @@ void Traits::update(std::vector<double> traits)
 {
     for (size_t i = 0; i < traits.size(); i++)
     {
-        traits.at(i) = traits.at(i) / 10;
+        traits.at(i) = traits.at(i) / this->bound;
     }
     
     std::vector<double> new_trait_values;
@@ -53,7 +53,9 @@ void Traits::print()
     std::cout << "valores:\n";
     for (const auto &value : trait_values)
     {
-        std::cout << int(value) << " ";
+        std::cout << int(value * this->bound) << " ";
     }
     std::cout << "\n";
+
+    gaussian.print();
 }
